@@ -1,0 +1,5 @@
+id="req1"
+discord.py
+mcstatus
+aiosqlite
+python-dotenv
