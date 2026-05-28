@@ -1,6 +1,6 @@
-from flask import Flask
+from flask import flask
 
-app = Flask(__name__)
+app = flask(__name__)
 
 @app.route("/")
 def home():
