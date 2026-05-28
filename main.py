@@ -3,11 +3,30 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import os
 import asyncio
+from flask import Flask
+import threading
 
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
 
+# ======================
+# KEEP ALIVE SERVER
+# ======================
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running"
+
+def run_web():
+    app.run(host="0.0.0.0", port=10000)
+
+threading.Thread(target=run_web).start()
+
+# ======================
+# DISCORD BOT SETUP
+# ======================
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
@@ -32,7 +51,6 @@ COGS = [
 
 @bot.event
 async def on_ready():
-
     print(f"Logged in as {bot.user}")
 
     activity = discord.Streaming(
@@ -40,13 +58,10 @@ async def on_ready():
         url="https://twitch.tv/novamc"
     )
 
-    await bot.change_presence(
-        activity=activity
-    )
+    await bot.change_presence(activity=activity)
 
     try:
         synced = await bot.tree.sync()
-
         print(f"Synced {len(synced)} commands")
 
     except Exception as e:
@@ -54,25 +69,18 @@ async def on_ready():
 
 
 async def load_cogs():
-
     for cog in COGS:
-
         try:
             await bot.load_extension(cog)
-
             print(f"Loaded {cog}")
-
         except Exception as e:
             print(f"Failed to load {cog}")
             print(e)
 
 
 async def main():
-
     async with bot:
-
         await load_cogs()
-
         await bot.start(TOKEN)
 
 
